@@ -17,13 +17,25 @@ function noSearchDefaultPageRender() {
   app.innerHTML = `
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
       <div class="content-container">
-        <h1>Hao's Search</h1>
+        <h1 class="title">Hao's Search</h1>
         <p>DuckDuckGo's bang redirects are too slow. Add the following URL as a custom search engine to your browser. Enables <a href="https://duckduckgo.com/bang.html" target="_blank">all of DuckDuckGo's bangs.</a></p>
         <div class="url-container"> 
           <input 
             type="text" 
             class="url-input"
-            value="https://search.hao.dev?d=q=%s"
+            value="https://search.hao.dev?q=%s"
+            readonly 
+          />
+          <button class="copy-button">
+            <img src="/clipboard.svg" alt="Copy" />
+          </button>
+        </div>
+        <p>If you would like to override the default bang, you can do so by adding the "d" parameter. For example, to use Google as the default bang, you can do:</p>
+        <div class="url-container"> 
+          <input 
+            type="text" 
+            class="url-input"
+            value="https://search.hao.dev?d=g&q=%s"
             readonly 
           />
           <button class="copy-button">
@@ -32,7 +44,7 @@ function noSearchDefaultPageRender() {
         </div>
       </div>
       <footer class="footer">
-        <a href="https://github.com/h-dong/search-engine-redirect" target="_blank">github</a>
+        <a href="https://github.com/h-dong/search-engine-redirect" target="_blank">Github</a>
       </footer>
     </div>
   `;

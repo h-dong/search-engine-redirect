@@ -77,15 +77,18 @@ textarea {
   font: inherit;
 }
 
-/* Add these new styles */
+.title {
+  margin-bottom: 32px;
+}
+
 .url-container {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 16px;
+  margin-bottom: 16px;
 }
 
-/* Add this new style */
 .content-container {
   max-width: 36rem;
   text-align: center;
@@ -128,7 +131,6 @@ textarea {
   background: #28a745;
 }
 
-/* Add footer styles */
 .footer {
   position: fixed;
   bottom: 16px;
