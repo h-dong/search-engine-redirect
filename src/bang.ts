@@ -2,6 +2,15 @@
 
 export const bangs = [
   {
+    c: "Tech",
+    d: "hao.dev",
+    r: 0,
+    s: "Hao",
+    sc: "Tools",
+    t: "hao",
+    u: "https://hao.dev/search?q={{{s}}}",
+  },
+  {
     c: "AI",
     d: "www.t3.chat",
     r: 0,

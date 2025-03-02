@@ -1,18 +1,29 @@
 import { bangs } from "./bang";
 import "./global.css";
 
+const debug = true;
+
+const logger = {
+  log: (...args: any[]) => {
+    if (debug) console.log(...args);
+  },
+  error: (...args: any[]) => {
+    if (debug) console.error(...args);
+  },
+}
+
 function noSearchDefaultPageRender() {
   const app = document.querySelector<HTMLDivElement>("#app")!;
   app.innerHTML = `
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
       <div class="content-container">
-        <h1>Und*ck</h1>
+        <h1>Hao's Search</h1>
         <p>DuckDuckGo's bang redirects are too slow. Add the following URL as a custom search engine to your browser. Enables <a href="https://duckduckgo.com/bang.html" target="_blank">all of DuckDuckGo's bangs.</a></p>
         <div class="url-container"> 
           <input 
             type="text" 
             class="url-input"
-            value="https://unduck.link?q=%s"
+            value="https://search.hao.dev?d=q=%s"
             readonly 
           />
           <button class="copy-button">
@@ -21,11 +32,7 @@ function noSearchDefaultPageRender() {
         </div>
       </div>
       <footer class="footer">
-        <a href="https://t3.chat" target="_blank">t3.chat</a>
-        •
-        <a href="https://x.com/theo" target="_blank">theo</a>
-        •
-        <a href="https://github.com/t3dotgg/unduck" target="_blank">github</a>
+        <a href="https://github.com/h-dong/search-engine-redirect" target="_blank">github</a>
       </footer>
     </div>
   `;
@@ -44,24 +51,32 @@ function noSearchDefaultPageRender() {
   });
 }
 
-const LS_DEFAULT_BANG = localStorage.getItem("default-bang") ?? "g";
-const defaultBang = bangs.find((b) => b.t === LS_DEFAULT_BANG);
+function getBangredirectUrl({url, defaultBangString}: {url: URL, defaultBangString?: string}) {
+  const defaultBang = bangs.find((b) => b.t === defaultBangString);
 
-function getBangredirectUrl() {
-  const url = new URL(window.location.href);
+  if (defaultBangString) {
+    logger.log('Default bang based on default bang string:', defaultBang);
+  }
+
   const query = url.searchParams.get("q")?.trim() ?? "";
+
   if (!query) {
-    noSearchDefaultPageRender();
+    logger.error("Error: No search query parameter");
     return null;
   }
 
-  const match = query.match(/!(\S+)/i);
+  // Match both !bang and bang! formats
+  const prefixMatch = query.match(/!(\S+)/i);
+  const suffixMatch = query.match(/(\S+)!/);
 
-  const bangCandidate = match?.[1]?.toLowerCase();
+  const bangCandidate = (prefixMatch?.[1] ?? suffixMatch?.[1])?.toLowerCase();
   const selectedBang = bangs.find((b) => b.t === bangCandidate) ?? defaultBang;
 
-  // Remove the first bang from the query
-  const cleanQuery = query.replace(/!\S+\s*/i, "").trim();
+  // Remove bangs in query
+  const cleanQuery = query
+    .replaceAll(/!\S+\s*/i, "") // Remove prefix bangs
+    .replaceAll(/\s*\S+!/, "") // Remove suffix bangs
+    .trim();
 
   // Format of the url is:
   // https://www.google.com/search?q={{{s}}}
@@ -70,14 +85,51 @@ function getBangredirectUrl() {
     // Replace %2F with / to fix formats like "!ghr+t3dotgg/unduck"
     encodeURIComponent(cleanQuery).replace(/%2F/g, "/")
   );
-  if (!searchUrl) return null;
 
-  return searchUrl;
+  return searchUrl ?? null;
 }
 
 function doRedirect() {
-  const searchUrl = getBangredirectUrl();
-  if (!searchUrl) return;
+  logger.log("Starting redirect...");
+  
+  const url = new URL(window.location.href);
+
+  if (!url.searchParams.get("q")) {
+    logger.error("Error: URL missing search query parameter");
+
+    noSearchDefaultPageRender();
+    return;
+  }
+
+  const defaultBangString = url.searchParams.get("d")?.trim();
+  const hasBangInSearchTerm = url.searchParams.get("q")?.includes("!");
+
+  if (!defaultBangString && !hasBangInSearchTerm) {
+    logger.log("No default bang and no bang in search term, redirecting to duckduckgo");
+
+    const searchUrl = `https://duckduckgo.com/?q=${url.searchParams.get("q")}`;
+
+    logger.log("Redirecting to", searchUrl);
+
+    window.location.replace(searchUrl);
+  }
+
+  logger.log("Bang detected...");
+
+  const searchUrl = getBangredirectUrl({
+    url,
+    defaultBangString
+  });
+
+  if (!searchUrl) {
+    logger.error("Error: Invalid search URL");
+
+    noSearchDefaultPageRender();
+    return;
+  }
+
+  logger.log("Redirecting to", searchUrl);
+
   window.location.replace(searchUrl);
 }
 
