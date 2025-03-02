@@ -42,6 +42,18 @@ function noSearchDefaultPageRender() {
             <img src="/clipboard.svg" alt="Copy" />
           </button>
         </div>
+        <p>For browsers that supports search auto-complete, I suggest using DuckDuckGo:</p>
+        <div class="url-container"> 
+          <input 
+            type="text" 
+            class="url-input"
+            value="https://duckduckgo.com/ac/?q=%s&type=list"
+            readonly 
+          />
+          <button class="copy-button">
+            <img src="/clipboard.svg" alt="Copy" />
+          </button>
+        </div>
       </div>
       <footer class="footer">
         <a href="https://github.com/h-dong/search-engine-redirect" target="_blank">Github</a>
