@@ -89,17 +89,20 @@ function getBangredirectUrl({url, defaultBangString}: {url: URL, defaultBangStri
     return null;
   }
 
+  const prefixRegex = /\s!\S+\s*/ig;
+  const suffixRegex = /\s*\S+!\s/ig;
+  
   // Match both !bang and bang! formats
-  const prefixMatch = query.match(/!(\S+)/i);
-  const suffixMatch = query.match(/(\S+)!/);
+  const prefixMatch = query.match(prefixRegex);
+  const suffixMatch = query.match(suffixRegex);
 
-  const bangCandidate = (prefixMatch?.[1] ?? suffixMatch?.[1])?.toLowerCase();
-  const selectedBang = bangs.find((b) => b.t === bangCandidate) ?? defaultBang;
+  const bangCandidate = (prefixMatch?.[0] ?? suffixMatch?.[0])?.toLowerCase().replaceAll("!", "").trim() ?? defaultBang;
+  const selectedBang = bangs.find((b) => b.t === bangCandidate) ;
 
   // Remove bangs in query
   const cleanQuery = query
-    .replaceAll(/!\S+\s*/i, "") // Remove prefix bangs
-    .replaceAll(/\s*\S+!/, "") // Remove suffix bangs
+    .replaceAll(prefixRegex, " ") // Remove prefix bangs
+    .replaceAll(suffixRegex, " ") // Remove suffix bangs
     .trim();
 
   // Format of the url is:
