@@ -139,6 +139,7 @@ function doRedirect() {
     logger.log("Redirecting to", searchUrl);
 
     window.location.replace(searchUrl);
+    return;
   }
 
   logger.log("Bang detected...");
