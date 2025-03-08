@@ -1,7 +1,7 @@
 import { bangs } from "./bang";
 import "./global.css";
 
-const debug = true;
+const debug = false;
 
 const logger = {
   log: (...args: any[]) => {
